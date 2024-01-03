@@ -1,0 +1,12 @@
+
+
+
+
+0 1 * * * /home/crons/cron_facts_12h >> /var/log/cron.log 2>&1
+
+
+
+
+# vpncheck
+*/5 * * * * /home/crons/vpncheck >> /var/log/cron.log 2>&1
+

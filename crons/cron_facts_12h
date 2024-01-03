@@ -1,0 +1,38 @@
+#!/bin/sh
+
+TOKEN_PATH=/home/secrets/gToken.p12
+REDSHIFT_PATH=/home/secrets/redshift-jdbc.log
+
+
+function run_job() {
+  START_TIME=`date +%s`
+  local JOB_NAME=$1
+  local SCRIPT_PATH=$2
+  
+  (
+        sh $SCRIPT_PATH --context_param token=$TOKEN_PATH              &&\
+    echo `date +%Y-%m-%d\ %H:%M:%S`" [$JOB_NAME] Successful ($(($(date +%s)-$START_TIME))s)"
+  ) || echo `date +%Y-%m-%d\ %H:%M:%S`" [$JOB_NAME] ERROR ($(($(date +%s)-$START_TIME))s)"
+}
+
+
+# Magento_Jobs
+run_job "Magento_Sales" "/home/jobs/Magento_Sales/Magento_Sales/Magento_Sales_run.sh"
+
+
+
+# facts sales orders 
+run_job "Fact Orders" "/home/jobs/Refresh_CurrentYear_SalesOrders/Refresh_CurrentYear_SalesOrders/Refresh_CurrentYear_SalesOrders_run.sh"
+
+# facts sales Deliveries 
+run_job "Fact Deliveries & Credit Memo" "/home/jobs/Refresh_CurrentYear_Deliveries/Refresh_CurrentYear_Deliveries/Refresh_CurrentYear_Deliveries_run.sh"
+
+# facts sales Invoices  
+run_job "Fact Invoices" "/home/jobs/Refresh_CurrentYear_Invoices/Refresh_CurrentYear_Invoices/Refresh_CurrentYear_Invoices_run.sh"
+
+# facts sales orders 
+run_job "Mapping Sales" "/home/jobs/Dim_MapSales/Dim_MapSales/Dim_MapSales_run.sh"
+
+
+
+

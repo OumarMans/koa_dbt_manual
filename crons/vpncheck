@@ -1,0 +1,20 @@
+#!/bin/sh
+
+if pgrep -x 'openvpn' > /dev/null
+then
+    ping -c 3 10.55.117.200 > /dev/null 2>&1
+    if [ $? -ne 0 ]
+        then
+        # restart the vpn
+        date >> /etc/openvpn/vpnstatus.log
+        echo `date +%Y-%m-%d\ %H:%M:%S`" [OpenVPN] IP not reachable - restart OpenVPN now"
+        # echo "ip nicht erreichbar deswegen neustart" >> /etc/openvpn/vpnstatus.log
+        killall -9 openvpn
+        openvpn --config /etc/openvpn/vpnconfig.ovpn --auth-user-pass /etc/openvpn/vpnlogin.txt &
+    fi
+else
+    date >> /etc/openvpn/vpnstatus.log
+    echo `date +%Y-%m-%d\ %H:%M:%S`" [OpenVPN] not working - restart OpenVPN now"
+    # echo "laeuft nicht und wird neu gestartet" >> /etc/openvpn/vpnstatus.log
+    openvpn --config /etc/openvpn/vpnconfig.ovpn --auth-user-pass /etc/openvpn/vpnlogin.txt &
+fi
